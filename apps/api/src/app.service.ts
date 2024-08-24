@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { add } from '../../../libs/sample/dist';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  getHello() {
+    const aa = add(12, 4);
+    return aa;
   }
 }
