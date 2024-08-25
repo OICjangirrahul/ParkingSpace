@@ -8,12 +8,11 @@ export class UserWhereUniqueInput {
 }
 
 @InputType()
-export class UserWhereInputStrict implements RestrictProperties<UserWhereInputStrict, Omit<Prisma.UserWhereInput,'Credentials' | 'AuthProvider'| 'Admin' | 'Manager' | 'Valet' |'Customer'>> {
+export class UserWhereInputStrict implements RestrictProperties<UserWhereInputStrict, Omit<Prisma.UserWhereInput,'Credentials' | 'AuthProvider'| 'Admin' | 'Manager' | 'Valet' |'Customer' | 'image'>> {
   uid: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   name: StringFilter
-  image: StringFilter
   // Todo: Add the below field decorator only to the $Enums types.
   // @Field(() => $Enums.x)
 

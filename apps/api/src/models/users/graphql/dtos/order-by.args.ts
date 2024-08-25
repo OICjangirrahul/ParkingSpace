@@ -4,7 +4,7 @@ import { RestrictProperties } from 'src/common/dtos/common.input'
 
 @InputType()
 export class UserOrderByWithRelationInputStrict
-  implements RestrictProperties<UserOrderByWithRelationInputStrict, Omit<Prisma.UserOrderByWithRelationInput,'Credentials' | 'AuthProvider'| 'Admin' | 'Manager' | 'Valet' |'Customer'>>
+  implements RestrictProperties<UserOrderByWithRelationInputStrict, Omit<Prisma.UserOrderByWithRelationInput,'Credentials' | 'AuthProvider'| 'Admin' | 'Manager' | 'Valet' |'Customer' | 'image'>>
 {
   @Field(() => Prisma.SortOrder)
   uid: Prisma.SortOrder
@@ -14,8 +14,6 @@ export class UserOrderByWithRelationInputStrict
   updatedAt: Prisma.SortOrder
   @Field(() => Prisma.SortOrder)
   name: Prisma.SortOrder 
-  @Field(() => Prisma.SortOrder)
-  image: Prisma.SortOrder
   // uid: StringFilter
   // createdAt: DateTimeFilter
   // updatedAt: DateTimeFilter

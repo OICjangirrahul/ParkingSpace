@@ -36,8 +36,16 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const user = await this.jwtService.verify(token)
-      req.user = user
+      const payload = await this.jwtService.verify(token)
+      const uid = payload.uid
+      if(!uid) {
+        throw new UnauthorizedException('Invalid token. No Uid In Token')
+      }
+      const user = await this.prisma.user.findUnique({where: { uid }})
+      if(!user) {
+        throw new UnauthorizedException('Invalid token. No User')
+      }
+      req.user = payload
     } catch (err) {
       console.error('Token validation error:', err)
     }
@@ -51,14 +59,14 @@ export class AuthGuard implements CanActivate {
     req: any,
     context: ExecutionContext,
   ): Promise<boolean> {
-    const userRoles = await this.getUserRoles(req.user.uid)
-    req.user.roles = userRoles
-
+    
     const requiredRoles = this.getMetadata<Role[]>('roles', context)
     if (!requiredRoles || requiredRoles.length === 0) {
       return true
     }
-
+    const userRoles = await this.getUserRoles(req.user.uid)
+    req.user.roles = userRoles
+    
     return requiredRoles.some((role) => userRoles.includes(role))
   }
 

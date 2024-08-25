@@ -2,7 +2,7 @@ import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { UsersService } from './users.service'
 import { User } from './entity/user.entity'
 import { FindManyUserArgs, FindUniqueUserArgs } from './dtos/find.args'
-import { CreateUserInput } from './dtos/create-user.input'
+import { LoginInput, LoginOutput, RegisterWithCredentialsInput, RegisterWithProviderInput } from './dtos/create-user.input'
 import { UpdateUserInput } from './dtos/update-user.input'
 import { checkRowLevelPermission } from 'src/common/auth/util'
 import { GetUserType } from 'src/common/types'
@@ -14,13 +14,29 @@ export class UsersResolver {
   constructor(private readonly usersService: UsersService,
     private readonly prisma: PrismaService) {}
 
-  @AllowAuthenticated()
+
   @Mutation(() => User)
-  createUser(@Args('createUserInput') args: CreateUserInput, @GetUser() user: GetUserType) {
-    checkRowLevelPermission(user, args.uid)
-    return this.usersService.create(args)
+   async registherWithCredentials(@Args('registerWithCredentialsInput') args: RegisterWithCredentialsInput) {
+     return this.usersService.registherWithCredentials(args)
   }
 
+  @Mutation(() => User)
+  async registherWithProvider(@Args('registerWithProviderInput') args: RegisterWithProviderInput) {
+    return this.usersService.registherWithProvider(args)
+ }
+
+ @Mutation(() => LoginOutput)
+ async login(@Args('LoginInput') args: LoginInput ) {
+   return this.usersService.login(args)
+ }
+
+ @AllowAuthenticated()
+ @Query(() => User)
+ whoami(@GetUser() user: GetUserType) {
+   return this.usersService.findOne({ where: { uid: user.uid } })
+ }
+ 
+  @AllowAuthenticated('admin')
   @Query(() => [User], { name: 'users' })
   findAll(@Args() args: FindManyUserArgs) {
     return this.usersService.findAll(args)
@@ -47,3 +63,7 @@ export class UsersResolver {
     return this.usersService.remove(args)
   }
 }
+function registerEnumType(AuthProviderType: { GOOGLE: "GOOGLE"; CREDENTIALS: "CREDENTIALS" }, arg1: { name: string }) {
+  throw new Error('Function not implemented.')
+}
+
