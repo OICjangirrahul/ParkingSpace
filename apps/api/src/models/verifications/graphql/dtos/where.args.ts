@@ -1,16 +1,35 @@
 import { Field, InputType, PartialType } from '@nestjs/graphql'
 import { Prisma } from '@prisma/client'
-import { RestrictProperties } from 'src/common/dtos/common.input'
+import {
+  BoolFilter,
+  DateTimeFilter,
+  IntFilter,
+  RestrictProperties,
+  StringFilter,
+} from 'src/common/dtos/common.input'
+import { AdminRelationFilter } from 'src/models/admins/graphql/dtos/where.args'
+import { GarageRelationFilter } from 'src/models/garages/graphql/dtos/where.args'
 
 @InputType()
 export class VerificationWhereUniqueInput {
-  id: number
+  garageId: number
 }
 
 @InputType()
-export class VerificationWhereInputStrict implements RestrictProperties<VerificationWhereInputStrict, Prisma.VerificationWhereInput> {
-  // Todo: Add the below field decorator only to the $Enums types.
-  // @Field(() => $Enums.x)
+export class VerificationWhereInputStrict
+  implements
+    RestrictProperties<
+      VerificationWhereInputStrict,
+      Prisma.VerificationWhereInput
+    >
+{
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  verified: BoolFilter
+  adminId: StringFilter
+  garageId: IntFilter
+  Admin: AdminRelationFilter
+  Garage: GarageRelationFilter
 
   AND: VerificationWhereInput[]
   OR: VerificationWhereInput[]

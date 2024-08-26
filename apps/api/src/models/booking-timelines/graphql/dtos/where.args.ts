@@ -1,6 +1,14 @@
 import { Field, InputType, PartialType } from '@nestjs/graphql'
-import { Prisma } from '@prisma/client'
-import { RestrictProperties } from 'src/common/dtos/common.input'
+import { $Enums, Prisma } from '@prisma/client'
+import {
+  DateTimeFilter,
+  IntFilter,
+  RestrictProperties,
+  StringFilter,
+} from 'src/common/dtos/common.input'
+import { BookingRelationFilter } from 'src/models/bookings/graphql/dtos/where.args'
+import { ManagerRelationFilter } from 'src/models/managers/graphql/dtos/where.args'
+import { ValetRelationFilter } from 'src/models/valets/graphql/dtos/where.args'
 
 @InputType()
 export class BookingTimelineWhereUniqueInput {
@@ -8,9 +16,23 @@ export class BookingTimelineWhereUniqueInput {
 }
 
 @InputType()
-export class BookingTimelineWhereInputStrict implements RestrictProperties<BookingTimelineWhereInputStrict, Prisma.BookingTimelineWhereInput> {
-  // Todo: Add the below field decorator only to the $Enums types.
-  // @Field(() => $Enums.x)
+export class BookingTimelineWhereInputStrict
+  implements
+    RestrictProperties<
+      BookingTimelineWhereInputStrict,
+      Prisma.BookingTimelineWhereInput
+    >
+{
+  id: IntFilter
+  timestamp: DateTimeFilter
+  @Field(() => $Enums.BookingStatus)
+  status: $Enums.BookingStatus
+  bookingId: IntFilter
+  valetId: StringFilter
+  managerId: StringFilter
+  Booking: BookingRelationFilter
+  Valet: ValetRelationFilter
+  Manager: ManagerRelationFilter
 
   AND: BookingTimelineWhereInput[]
   OR: BookingTimelineWhereInput[]

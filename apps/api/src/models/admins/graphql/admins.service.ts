@@ -22,9 +22,9 @@ export class AdminsService {
   }
 
   update(updateAdminInput: UpdateAdminInput) {
-    const { id, ...data } = updateAdminInput
+    const { uid, ...data } = updateAdminInput
     return this.prisma.admin.update({
-      where: { id },
+      where: { uid },
       data: data,
     })
   }

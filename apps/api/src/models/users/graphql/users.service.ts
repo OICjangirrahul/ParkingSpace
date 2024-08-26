@@ -1,18 +1,28 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common'
 import { FindManyUserArgs, FindUniqueUserArgs } from './dtos/find.args'
 import { PrismaService } from 'src/common/prisma/prisma.service'
-import { LoginInput, LoginOutput, RegisterWithCredentialsInput, RegisterWithProviderInput } from './dtos/create-user.input'
+import {
+  LoginInput,
+  LoginOutput,
+  RegisterWithCredentialsInput,
+  RegisterWithProviderInput,
+} from './dtos/create-user.input'
 import { UpdateUserInput } from './dtos/update-user.input'
 import * as bcrypt from 'bcryptjs'
 import { v4 as uuid } from 'uuid'
-import { Args, Mutation } from '@nestjs/graphql'
 import { JwtService } from '@nestjs/jwt'
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly jwtService: JwtService,private readonly prisma: PrismaService) {}
-
-  registherWithProvider({image, name, uid, type}: RegisterWithProviderInput) {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
+  registerWithProvider({ image, name, uid, type }: RegisterWithProviderInput) {
     return this.prisma.user.create({
       data: {
         uid,
@@ -20,22 +30,28 @@ export class UsersService {
         image,
         AuthProvider: {
           create: {
-            type
-          }
-        }
-      }
+            type,
+          },
+        },
+      },
     })
   }
 
-  async registherWithCredentials({email,name,image,password}: RegisterWithCredentialsInput) {
+  async registerWithCredentials({
+    email,
+    name,
+    password,
+    image,
+  }: RegisterWithCredentialsInput) {
     const existingUser = await this.prisma.credentials.findUnique({
       where: { email },
     })
-    if(existingUser) {
-      throw new BadRequestException('User already exists with this email')
+
+    if (existingUser) {
+      throw new BadRequestException('User already exists with this email.')
     }
 
-    
+    // Hash the password
     const salt = bcrypt.genSaltSync()
     const passwordHash = bcrypt.hashSync(password, salt)
 
@@ -49,7 +65,7 @@ export class UsersService {
         Credentials: {
           create: {
             email,
-            passwordHash
+            passwordHash,
           },
         },
         AuthProvider: {
@@ -59,8 +75,8 @@ export class UsersService {
         },
       },
       include: {
-        Credentials: true
-      }
+        Credentials: true,
+      },
     })
   }
 
@@ -94,7 +110,7 @@ export class UsersService {
       },
     )
 
-    return { token: jwtToken }
+    return { token: jwtToken, user }
   }
 
   findAll(args: FindManyUserArgs) {

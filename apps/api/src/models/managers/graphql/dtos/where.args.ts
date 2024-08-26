@@ -1,14 +1,33 @@
 import { Field, InputType, PartialType } from '@nestjs/graphql'
 import { Prisma } from '@prisma/client'
-import { RestrictProperties } from 'src/common/dtos/common.input'
+import {
+  DateTimeFilter,
+  IntFilter,
+  RestrictProperties,
+  StringFilter,
+} from 'src/common/dtos/common.input'
+import { BookingTimelineListRelationFilter } from 'src/models/booking-timelines/graphql/dtos/where.args'
+import { CompanyRelationFilter } from 'src/models/companies/graphql/dtos/where.args'
+import { UserRelationFilter } from 'src/models/users/graphql/dtos/where.args'
 
 @InputType()
 export class ManagerWhereUniqueInput {
-  id: number
+  uid: string
 }
 
 @InputType()
-export class ManagerWhereInputStrict implements RestrictProperties<ManagerWhereInputStrict, Prisma.ManagerWhereInput> {
+export class ManagerWhereInputStrict
+  implements
+    RestrictProperties<ManagerWhereInputStrict, Prisma.ManagerWhereInput>
+{
+  User: UserRelationFilter
+  uid: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  displayName: StringFilter
+  companyId: IntFilter
+  Company: CompanyRelationFilter
+  BookingTimeline: BookingTimelineListRelationFilter
   // Todo: Add the below field decorator only to the $Enums types.
   // @Field(() => $Enums.x)
 
@@ -18,9 +37,7 @@ export class ManagerWhereInputStrict implements RestrictProperties<ManagerWhereI
 }
 
 @InputType()
-export class ManagerWhereInput extends PartialType(
-  ManagerWhereInputStrict,
-) {}
+export class ManagerWhereInput extends PartialType(ManagerWhereInputStrict) {}
 
 @InputType()
 export class ManagerListRelationFilter {

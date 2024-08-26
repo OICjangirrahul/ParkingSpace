@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { FindManyValetArgs, FindUniqueValetArgs } from './dtos/find.args'
 import { PrismaService } from 'src/common/prisma/prisma.service'
 import { CreateValetInput } from './dtos/create-valet.input'
@@ -22,14 +22,24 @@ export class ValetsService {
   }
 
   update(updateValetInput: UpdateValetInput) {
-    const { id, ...data } = updateValetInput
+    const { uid, ...data } = updateValetInput
     return this.prisma.valet.update({
-      where: { id },
+      where: { uid },
       data: data,
     })
   }
 
   remove(args: FindUniqueValetArgs) {
     return this.prisma.valet.delete(args)
+  }
+
+  async validValet(uid: string) {
+    const valet = await this.prisma.valet.findUnique({
+      where: { uid: uid },
+    })
+    if (!valet) {
+      throw new BadRequestException('You are not a valet.')
+    }
+    return valet
   }
 }

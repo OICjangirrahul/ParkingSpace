@@ -1,5 +1,12 @@
 import {
-  Controller, Get, Post, Body, Patch, Param, Delete, Query
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
 } from '@nestjs/common'
 
 import { PrismaService } from 'src/common/prisma/prisma.service'
@@ -16,7 +23,6 @@ import { AdminEntity } from './entity/admin.entity'
 import { AllowAuthenticated, GetUser } from 'src/common/auth/auth.decorator'
 import { GetUserType } from 'src/common/types'
 import { checkRowLevelPermission } from 'src/common/auth/util'
-
 
 @ApiTags('admins')
 @Controller('admins')
@@ -43,34 +49,34 @@ export class AdminsController {
   }
 
   @ApiOkResponse({ type: AdminEntity })
-  @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.prisma.admin.findUnique({ where: { id } })
+  @Get(':uid')
+  findOne(@Param('uid') uid: string) {
+    return this.prisma.admin.findUnique({ where: { uid } })
   }
 
   @ApiOkResponse({ type: AdminEntity })
   @ApiBearerAuth()
   @AllowAuthenticated()
-  @Patch(':id')
+  @Patch(':uid')
   async update(
-    @Param('id') id: number,
+    @Param('uid') uid: string,
     @Body() updateAdminDto: UpdateAdmin,
     @GetUser() user: GetUserType,
   ) {
-    const admin = await this.prisma.admin.findUnique({ where: { id } })
+    const admin = await this.prisma.admin.findUnique({ where: { uid } })
     checkRowLevelPermission(user, admin.uid)
     return this.prisma.admin.update({
-      where: { id },
+      where: { uid },
       data: updateAdminDto,
     })
   }
 
   @ApiBearerAuth()
   @AllowAuthenticated()
-  @Delete(':id')
-  async remove(@Param('id') id: number, @GetUser() user: GetUserType) {
-    const admin = await this.prisma.admin.findUnique({ where: { id } })
+  @Delete(':uid')
+  async remove(@Param('uid') uid: string, @GetUser() user: GetUserType) {
+    const admin = await this.prisma.admin.findUnique({ where: { uid } })
     checkRowLevelPermission(user, admin.uid)
-    return this.prisma.admin.delete({ where: { id } })
+    return this.prisma.admin.delete({ where: { uid } })
   }
 }

@@ -1,24 +1,30 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
 import { VerificationsService } from './verifications.service'
 import { Verification } from './entity/verification.entity'
-import { FindManyVerificationArgs, FindUniqueVerificationArgs } from './dtos/find.args'
+import {
+  FindManyVerificationArgs,
+  FindUniqueVerificationArgs,
+} from './dtos/find.args'
 import { CreateVerificationInput } from './dtos/create-verification.input'
 import { UpdateVerificationInput } from './dtos/update-verification.input'
-import { checkRowLevelPermission } from 'src/common/auth/util'
-import { GetUserType } from 'src/common/types'
 import { AllowAuthenticated, GetUser } from 'src/common/auth/auth.decorator'
 import { PrismaService } from 'src/common/prisma/prisma.service'
+import { GetUserType } from 'src/common/types'
 
 @Resolver(() => Verification)
 export class VerificationsResolver {
-  constructor(private readonly verificationsService: VerificationsService,
-    private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly verificationsService: VerificationsService,
+    private readonly prisma: PrismaService,
+  ) {}
 
-  @AllowAuthenticated()
+  @AllowAuthenticated('admin')
   @Mutation(() => Verification)
-  createVerification(@Args('createVerificationInput') args: CreateVerificationInput, @GetUser() user: GetUserType) {
-    checkRowLevelPermission(user, args.uid)
-    return this.verificationsService.create(args)
+  createVerification(
+    @Args('createVerificationInput') args: CreateVerificationInput,
+    @GetUser() user: GetUserType,
+  ) {
+    return this.verificationsService.create(args, user.uid)
   }
 
   @Query(() => [Verification], { name: 'verifications' })
@@ -31,19 +37,17 @@ export class VerificationsResolver {
     return this.verificationsService.findOne(args)
   }
 
-  @AllowAuthenticated()
+  @AllowAuthenticated('admin')
   @Mutation(() => Verification)
-  async updateVerification(@Args('updateVerificationInput') args: UpdateVerificationInput, @GetUser() user: GetUserType) {
-    const verification = await this.prisma.verification.findUnique({ where: { id: args.id } })
-    checkRowLevelPermission(user, verification.uid)
+  async updateVerification(
+    @Args('updateVerificationInput') args: UpdateVerificationInput,
+  ) {
     return this.verificationsService.update(args)
   }
 
-  @AllowAuthenticated()
+  @AllowAuthenticated('admin')
   @Mutation(() => Verification)
-  async removeVerification(@Args() args: FindUniqueVerificationArgs, @GetUser() user: GetUserType) {
-    const verification = await this.prisma.verification.findUnique(args)
-    checkRowLevelPermission(user, verification.uid)
+  async removeVerification(@Args() args: FindUniqueVerificationArgs) {
     return this.verificationsService.remove(args)
   }
 }

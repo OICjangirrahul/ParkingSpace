@@ -1,5 +1,12 @@
 import {
-  Controller, Get, Post, Body, Patch, Param, Delete, Query
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
 } from '@nestjs/common'
 
 import { PrismaService } from 'src/common/prisma/prisma.service'
@@ -17,7 +24,6 @@ import { AllowAuthenticated, GetUser } from 'src/common/auth/auth.decorator'
 import { GetUserType } from 'src/common/types'
 import { checkRowLevelPermission } from 'src/common/auth/util'
 
-
 @ApiTags('reviews')
 @Controller('reviews')
 export class ReviewsController {
@@ -28,7 +34,7 @@ export class ReviewsController {
   @ApiCreatedResponse({ type: ReviewEntity })
   @Post()
   create(@Body() createReviewDto: CreateReview, @GetUser() user: GetUserType) {
-    checkRowLevelPermission(user, createReviewDto.uid)
+    checkRowLevelPermission(user, createReviewDto.customerId)
     return this.prisma.review.create({ data: createReviewDto })
   }
 
@@ -58,7 +64,7 @@ export class ReviewsController {
     @GetUser() user: GetUserType,
   ) {
     const review = await this.prisma.review.findUnique({ where: { id } })
-    checkRowLevelPermission(user, review.uid)
+    checkRowLevelPermission(user, review.customerId)
     return this.prisma.review.update({
       where: { id },
       data: updateReviewDto,
@@ -70,7 +76,7 @@ export class ReviewsController {
   @Delete(':id')
   async remove(@Param('id') id: number, @GetUser() user: GetUserType) {
     const review = await this.prisma.review.findUnique({ where: { id } })
-    checkRowLevelPermission(user, review.uid)
+    checkRowLevelPermission(user, review.customerId)
     return this.prisma.review.delete({ where: { id } })
   }
 }
