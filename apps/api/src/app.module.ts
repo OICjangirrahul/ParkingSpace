@@ -33,7 +33,7 @@ const MAX_AGE = 24 * 60 * 60
       driver: ApolloDriver,
       introspection: true,
       fieldResolverEnhancers: ['guards'],
-      autoSchemaFile: join(process.cwd(),'src/shema.gql'),
+      autoSchemaFile: join(process.cwd(),'src/schema.gql'),
       buildSchemaOptions:{
         numberScalarMode: 'integer'
       }

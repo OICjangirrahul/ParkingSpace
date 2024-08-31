@@ -1,0 +1,22 @@
+mutation RegisterWithCredentials(
+  $registerWithCredentialsInput: RegisterWithCredentialsInput!
+) {
+  registerWithCredentials(
+    registerWithCredentialsInput: $registerWithCredentialsInput
+  ) {
+    updatedAt
+    uid
+    name
+    image
+    createdAt
+  }
+}
+
+query Admin($where: AdminWhereUniqueInput!) {
+  admin(where: $where) {
+    uid,
+    user {
+      name
+    }
+  }
+}

@@ -19,7 +19,7 @@ import { User } from 'src/models/users/graphql/entity/user.entity'
 import { Verification } from 'src/models/verifications/graphql/entity/verification.entity'
 import { AdminWhereInput } from './dtos/where.args'
 
-@AllowAuthenticated('admin')
+// @AllowAuthenticated('admin')
 @Resolver(() => Admin)
 export class AdminsResolver {
   constructor(
